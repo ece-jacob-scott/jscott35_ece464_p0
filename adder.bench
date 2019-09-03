@@ -1,0 +1,19 @@
+# adder
+# 6 inputs
+# 7 outputs
+
+# INPUTS:
+INPUT(A)
+INPUT(B)
+INPUT(C)
+
+# OUTPUTS:
+OUTPUT(c)
+OUTPUT(s)
+
+# GATES:
+a = XOR(A, B)
+b = AND(A, B)
+d = AND(C, a)
+s = XOR(a, C)
+c = OR(d, b)

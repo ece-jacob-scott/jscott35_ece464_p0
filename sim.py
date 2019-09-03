@@ -9,7 +9,6 @@ import os
 # 5. main: The main function
 
 
-
 # -------------------------------------------------------------------------------------------------------------------- #
 # FUNCTION: Reading in the Circuit gate-level netlist file:
 def netRead(netName):
@@ -21,7 +20,6 @@ def netRead(netName):
     outputs = []    # array of the output wires
     gates = []      # array of the gate list
     inputBits = 0   # the number of inputs needed in this given circuit
-
 
     # main variable to hold the circuit netlist, this is a dictionary in Python, where:
     # key = wire name; value = a list of attributes of the wire
@@ -35,8 +33,8 @@ def netRead(netName):
             continue
 
         # Removing spaces and newlines
-        line = line.replace(" ","")
-        line = line.replace("\n","")
+        line = line.replace(" ", "")
+        line = line.replace("\n", "")
 
         # NOT Reading any comments
         if (line[0] == "#"):
@@ -47,7 +45,7 @@ def netRead(netName):
         # OUTPUT(y)
         # z=LOGIC(a,b,c,...)
 
-        # Read a INPUT wire and add to circuit:
+        # Read an INPUT wire and add to circuit:
         if (line[0:5] == "INPUT"):
             # Removing everything but the line variable name
             line = line.replace("INPUT", "")
@@ -59,7 +57,8 @@ def netRead(netName):
 
             # Error detection: line being made already exists
             if line in circuit:
-                msg = "NETLIST ERROR: INPUT LINE \"" + line + "\" ALREADY EXISTS PREVIOUSLY IN NETLIST"
+                msg = "NETLIST ERROR: INPUT LINE \"" + line + \
+                    "\" ALREADY EXISTS PREVIOUSLY IN NETLIST"
                 print(msg + "\n")
                 return msg
 
@@ -81,30 +80,41 @@ def netRead(netName):
             line = line.replace("OUTPUT", "")
             line = line.replace("(", "")
             line = line.replace(")", "")
+            line = "wire_" + line
+
+            # Error detection: line being made already exists
+            if line in circuit:
+                msg = "NETLIST ERROR: OUTPUT LINE \"" + line + \
+                    "\" ALREADY EXISTS PREVIOUSLY IN NETLIST"
+                print(msg + "\n")
+                return msg
 
             # Appending to the output array
-            outputs.append("wire_" + line)
+            outputs.append(line)
             continue
 
         # Read a gate output wire, and add to the circuit dictionary
-        lineSpliced = line.split("=") # splicing the line at the equals sign to get the gate output wire
+        # splicing the line at the equals sign to get the gate output wire
+        lineSpliced = line.split("=")
         gateOut = "wire_" + lineSpliced[0]
 
         # Error detection: line being made already exists
         if gateOut in circuit:
-            msg = "NETLIST ERROR: GATE OUTPUT LINE \"" + gateOut + "\" ALREADY EXISTS PREVIOUSLY IN NETLIST"
+            msg = "NETLIST ERROR: GATE OUTPUT LINE \"" + \
+                gateOut + "\" ALREADY EXISTS PREVIOUSLY IN NETLIST"
             print(msg+"\n")
             return msg
 
         # Appending the dest name to the gate list
         gates.append(gateOut)
 
-        lineSpliced = lineSpliced[1].split("(") # splicing the line again at the "("  to get the gate logic
+        # splicing the line again at the "("  to get the gate logic
+        lineSpliced = lineSpliced[1].split("(")
         logic = lineSpliced[0].upper()
 
-
         lineSpliced[1] = lineSpliced[1].replace(")", "")
-        terms = lineSpliced[1].split(",")  # Splicing the the line again at each comma to the get the gate terminals
+        # Splicing the the line again at each comma to the get the gate terminals
+        terms = lineSpliced[1].split(",")
         # Turning each term into an integer before putting it into the circuit dictionary
         terms = ["wire_" + x for x in terms]
 
@@ -116,7 +126,7 @@ def netRead(netName):
     # now after each wire is built into the circuit dictionary,
     # add a few more non-wire items: input width, input array, output array, gate list
     # for convenience
-    
+
     circuit["INPUT_WIDTH"] = ["input width:", inputBits]
     circuit["INPUTS"] = ["Input list", inputs]
     circuit["OUTPUTS"] = ["Output list", outputs]
@@ -128,16 +138,15 @@ def netRead(netName):
     print(circuit["OUTPUTS"])
     print(circuit["GATES"])
 
-
     return circuit
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # FUNCTION: calculates the output value for each logic gate
 def gateCalc(circuit, node):
-    
+
     # terminal will contain all the input wires of this logic gate (node)
-    terminals = list(circuit[node][1])  
+    terminals = list(circuit[node][1])
 
     # If the node is an Inverter gate output, solve and return the output
     if circuit[node][0] == "NOT":
@@ -160,7 +169,7 @@ def gateCalc(circuit, node):
 
         # if there is a 0 at any input terminal, AND output is 0. If there is an unknown terminal, mark the flag
         # Otherwise, keep it at 1
-        for term in terminals:  
+        for term in terminals:
             if circuit[term][3] == '0':
                 circuit[node][3] = '0'
                 break
@@ -293,19 +302,22 @@ def inputRead(circuit, line):
     inputs = list(circuit["INPUTS"][1])
     # dictionary item: [(bool) If accessed, (int) the value of each line, (int) layer number, (str) origin of U value]
     for bitVal in line:
-        bitVal = bitVal.upper() # in the case user input lower-case u
-        circuit[inputs[i]][3] = bitVal # put the bit value as the line value
-        circuit[inputs[i]][2] = True  # and make it so that this line is accessed
+        bitVal = bitVal.upper()  # in the case user input lower-case u
+        circuit[inputs[i]][3] = bitVal  # put the bit value as the line value
+        # and make it so that this line is accessed
+        circuit[inputs[i]][2] = True
 
         # In case the input has an invalid character (i.e. not "0", "1" or "U"), return an error flag
         if bitVal != "0" and bitVal != "1" and bitVal != "U":
             return -2
-        i -= 1 # continuing the increments
+        i -= 1  # continuing the increments
 
     return circuit
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # FUNCTION: the actual simulation #
+
+
 def basic_sim(circuit):
     # QUEUE and DEQUEUE
     # Creating a queue, using a list, containing all of the gates in the circuit
@@ -340,7 +352,8 @@ def basic_sim(circuit):
                 print(circuit)
                 return circuit
 
-            print("Progress: updating " + curr + " = " + circuit[curr][3] + " as the output of " + circuit[curr][0] + " for:")
+            print("Progress: updating " + curr + " = " +
+                  circuit[curr][3] + " as the output of " + circuit[curr][0] + " for:")
             for term in circuit[curr][1]:
                 print(term + " = " + circuit[term][3])
             print("\nPress Enter to Continue...")
@@ -366,8 +379,9 @@ def main():
 
     # Select circuit benchmark file, default is circuit.bench
     while True:
-        cktFile = "circuit.bench"   
-        print("\n Read circuit benchmark file: use " + cktFile + "?" + " Enter to accept or type filename: ")
+        cktFile = "adder.bench"
+        print("\n Read circuit benchmark file: use " + cktFile +
+              "?" + " Enter to accept or type filename: ")
         userInput = input()
         if userInput == "":
             break
@@ -388,11 +402,11 @@ def main():
 
     # Select input file, default is input.txt
     while True:
-        inputName = "input.txt"
-        print("\n Read input vector file: use " + inputName + "?" + " Enter to accept or type filename: ")
+        inputName = "adder_input.txt"
+        print("\n Read input vector file: use " + inputName +
+              "?" + " Enter to accept or type filename: ")
         userInput = input()
         if userInput == "":
-
             break
         else:
             inputName = os.path.join(script_dir, userInput)
@@ -403,8 +417,9 @@ def main():
 
     # Select output file, default is output.txt
     while True:
-        outputName = "output.txt"
-        print("\n Write output file: use " + outputName + "?" + " Enter to accept or type filename: ")
+        outputName = "adder_output.txt"
+        print("\n Write output file: use " + outputName +
+              "?" + " Enter to accept or type filename: ")
         userInput = input()
         if userInput == "":
             break
@@ -415,7 +430,8 @@ def main():
     # Note: UI code;
     # **************************************************************************************************************** #
 
-    print("\n *** Simulating the" + inputName + " file and will output in" + outputName + "*** \n")
+    print("\n *** Simulating the" + inputName +
+          " file and will output in" + outputName + "*** \n")
     inputFile = open(inputName, "r")
     outputFile = open(outputName, "w")
 
@@ -459,7 +475,6 @@ def main():
             print("...move on to next input\n")
             continue
 
-
         circuit = basic_sim(circuit)
         print("\n *** Finished simulation - resulting circuit: \n")
         print(circuit)
@@ -476,20 +491,19 @@ def main():
 
         # After each input line is finished, reset the circuit
         print("\n *** Now resetting circuit back to unknowns... \n")
-       
+
         for key in circuit:
-            if (key[0:5]=="wire_"):
+            if (key[0:5] == "wire_"):
                 circuit[key][2] = False
                 circuit[key][3] = 'U'
 
         print("\n circuit after resetting: \n")
         print(circuit)
         print("\n*******************\n")
-        
+
     outputFile.close
-    #exit()
+    # exit()
 
 
 if __name__ == "__main__":
     main()
-

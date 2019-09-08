@@ -506,8 +506,8 @@ def main():
         circuit = basic_sim(circuit)
         print("\n *** Finished simulation - resulting circuit: \n")
         # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
-        # printCkt(circuit)
-        print(circuit)
+        printCkt(circuit)
+        # print(circuit)
 
         for y in circuit["OUTPUTS"][1]:
             if not circuit[y][2]:
@@ -529,8 +529,8 @@ def main():
 
         print("\n circuit after resetting: \n")
         # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
-        # printCkt(circuit)
-        print(circuit)
+        printCkt(circuit)
+        # print(circuit)
 
         print("\n*******************\n")
 

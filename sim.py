@@ -10,7 +10,9 @@ import os
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # FUNCTION: Neatly prints the Circuit Dictionary:
-def printCkt (circuit):
+
+
+def printCkt(circuit):
     print("INPUT LIST:")
     for x in circuit["INPUTS"][1]:
         print(x + "= ", end='')
@@ -29,6 +31,8 @@ def printCkt (circuit):
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # FUNCTION: Reading in the Circuit gate-level netlist file:
+
+
 def netRead(netName):
     # Opening the netlist file:
     netFile = open(netName, "r")
@@ -414,8 +418,8 @@ def main():
     circuit = netRead(cktFile)
     print("\n Finished processing benchmark file and built netlist dictionary: \n")
     # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
-    # printCkt(circuit)
-    print(circuit)
+    printCkt(circuit)
+    # print(circuit)
 
     # keep an initial (unassigned any value) copy of the circuit for an easy reset
     newCircuit = circuit
@@ -473,7 +477,7 @@ def main():
 
         # Removing spaces
         line = line.replace(" ", "")
-        
+
         print("\n before processing circuit dictionary...")
         # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
         # printCkt(circuit)
@@ -483,7 +487,6 @@ def main():
         # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
         # printCkt(circuit)
         print(circuit)
-
 
         if circuit == -1:
             print("INPUT ERROR: INSUFFICIENT BITS")
@@ -505,7 +508,6 @@ def main():
         # Uncomment the following line, for the neater display of the function and then comment out print(circuit)
         # printCkt(circuit)
         print(circuit)
-
 
         for y in circuit["OUTPUTS"][1]:
             if not circuit[y][2]:

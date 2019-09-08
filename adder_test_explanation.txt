@@ -1,0 +1,31 @@
+000111
+------
+This test checks to make sure that all the adders work when given the most
+basic inputs of '01'. The output should be 0111 given that each adder gets just
+a '01' with not carry in.
+
+111111
+------
+This input will test that the ripple carry works properly because each adder
+is going to get a full '11' with a '1' in the carry in except the first adder
+obviously. 
+
+UUU111
+------
+This input will show that the adders are actually using XOR bits to complete
+the addition. If the XOR's are working properly then the output should be'UUUU'
+showing that an XOR gives 'U' if only given 1 input.
+
+UU1111
+------
+This input shows that the carry in bits accually XORed with the value of XOR
+to the circuit. With this input the first carry in should be '1' and then 
+another input is going to be 1, however, since the other input is 'U' the 
+overall input will be 'UUU0' since the carry in bit is XORed with the output
+of the first XOR with the given inputs. 
+
+110111
+------
+This input shows that the carry outs of the last 2 full adders are working.
+The output should be '1101' which shows that the first carry out is a '0' and
+that the next two carry outs are '1'.
